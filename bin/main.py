@@ -1,5 +1,7 @@
 import flet
 from sidebar import Sidebar
+from terminal import Terminal
+from testspace import TestSpace
 from flet import (
     UserControl,
     TextField,
@@ -26,23 +28,23 @@ from flet import (
 )
 
 
-class MainApp(UserControl):
-    def build(self):
-
-        return
+def appLayout():
+    rail = Sidebar()
+    terminal = Terminal()
+    return Row([
+        rail,
+        IconButton(icon=icons.ARROW_BACK_SHARP, on_click=lambda e: rail.hide(),width=5),
+        VerticalDivider(width=1),
+        TestSpace(width= 300),
+        # Column([], alignment=MainAxisAlignment.START, width=300, expand=False),
+        VerticalDivider(width=1),
+        terminal,
+    ], expand=True)
 
 
 def main(page: Page):
-    page.title = "Magezine Test Tool"
-    rail = Sidebar()
-    page.add(Row([
-        rail,
-        VerticalDivider(width=1),
-        IconButton(icon=icons.ARROW_BACK, on_click=lambda e: rail.hide()),
-        Column([Text("Body!")], alignment=MainAxisAlignment.START, expand=True),
-        VerticalDivider(width=1),
-        Column([Text("Terminal...")], alignment=MainAxisAlignment.START, expand=True)
-    ], expand=True))
+    page.title = "阅图测试工具"
+    page.add(appLayout())
     page.update()
 
 

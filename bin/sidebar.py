@@ -27,6 +27,7 @@ class Sidebar(UserControl):
             label_type=NavigationRailLabelType.ALL,
             min_width=99,
             min_extended_width=399,
+            group_alignment= -0.9,
             destinations=[
                 NavigationRailDestination(icon=icons.DONE, selected_icon=icons.DONE_OUTLINE, label="测试工具", ),
                 NavigationRailDestination(icon_content=Icon(icons.UPGRADE_OUTLINED),
