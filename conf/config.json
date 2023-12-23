@@ -1,0 +1,12 @@
+{
+  "tabs": [
+    {
+      "tab_name": "外销",
+      "conf_path": "overseas.json"
+    },
+    {
+      "tab_name": "常用",
+      "conf_path": "common.json"
+    }
+  ]
+}

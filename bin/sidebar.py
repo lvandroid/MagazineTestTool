@@ -1,4 +1,3 @@
-import flet
 from flet import (
     Page,
     UserControl,
@@ -29,10 +28,10 @@ class Sidebar(UserControl):
             min_extended_width=399,
             group_alignment= -0.9,
             destinations=[
-                NavigationRailDestination(icon=icons.DONE, selected_icon=icons.DONE_OUTLINE, label="测试工具", ),
-                NavigationRailDestination(icon_content=Icon(icons.UPGRADE_OUTLINED),
-                                          selected_icon_content=Icon(icons.UPGRADE),
-                                          label="自升级"),
+                NavigationRailDestination(icon=icons.DONE, selected_icon=icons.DONE_OUTLINE, label="外销", ),
+                # NavigationRailDestination(icon_content=Icon(icons.UPGRADE_OUTLINED),
+                                        #   selected_icon_content=Icon(icons.UPGRADE),
+                                        #   label="自升级"),
                 NavigationRailDestination(icon=icons.SETTINGS_OUTLINED,
                                           selected_icon_content=Icon(icons.SETTINGS),
                                           label_content=Text("设置"))

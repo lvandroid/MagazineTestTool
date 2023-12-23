@@ -1,0 +1,98 @@
+{
+  "tabs": [
+    {
+      "tab_name": "外销",
+      "scripts": [
+        {
+          "title": "清除数据",
+          "cmds": [
+            "adb shell pm clear com.vivo.magazine",
+            "adb shell setprop debug.festival.config yes",
+            "adb shell am force_stop com.vivo.magazine"
+          ]
+        },
+        {
+          "title": "卸载更新",
+          "cmds": [
+            "adb uninstall com.vivo.magazine"
+          ]
+        },
+        {
+          "title": "测试环境",
+          "cmds": [
+            "adb shell setprop dev.magazine.testhost yes",
+            "adb shell setprop dev.magazine.ad_test_host 10.101.102.107:8080",
+            "adb shell setprop dev.magazine.testhost_push_guide yes",
+            "adb shell setprop dev.magazine.test_url http://10.101.28.199:8080",
+            "adb shell setprop persist.sys.log.ctrl yes"
+          ]
+        },
+        {
+          "title": "正式环境",
+          "cmds": [
+            "adb shell setprop dev.magazine.testhost no",
+            "adb shell setprop dev.magazine.ad_test_host no",
+            "adb shell setprop dev.magazine.testhost_push_guide no",
+            "adb shell setprop persist.sys.log.ctrl no"
+          ]
+        },
+        {
+          "title": "打开okhttp日志",
+          "cmds": [
+            "adb shell setprop dev.magazine.okhttp.log yes"
+          ]
+        },
+        {
+          "title": "关闭okhttp日志",
+          "cmds": [
+            "adb shell setprop dev.magazine.okhttp.log no"
+          ]
+        }
+      ]
+    },
+    {
+      "tab_name": "常用命令",
+      "scripts": [
+        {
+          "title": "重启",
+          "cmds": [
+            "adb reboot"
+          ]
+        },
+        {
+          "title": "旧版root",
+          "cmds": [
+            "adb vivoroot"
+          ]
+        },
+        {
+          "title": "新版root",
+          "cmds": [
+            "fastboot root",
+            "fastboot oem remount"
+          ]
+        },
+        {
+          "title": "bootloader",
+          "cmds": [
+            "adb reboot fastboot"
+          ]
+        },
+        {
+          "title": "重新挂载",
+          "cmds": [
+            "adb remount"
+          ]
+        },
+        {
+          "title": "放开log限制",
+          "cmds": [
+            "adb shell setprop persist.sys.log.ctrl yes",
+            "adb shell setprop persist.sys.ratelimit 0",
+            "adb shell setprop log.ratelimit.level 0"
+          ]
+        }
+      ]
+    }
+  ]
+}

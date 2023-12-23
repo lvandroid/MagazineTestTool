@@ -1,0 +1,44 @@
+{
+  "tab_name": "常用命令",
+  "scripts": [
+    {
+      "title": "重启",
+      "cmds": [
+        "adb reboot"
+      ]
+    },
+    {
+      "title": "旧版root",
+      "cmds": [
+        "adb vivoroot"
+      ]
+    },
+    {
+      "title": "新版root",
+      "cmds": [
+        "fastboot root",
+        "fastboot oem remount"
+      ]
+    },
+    {
+      "title": "bootloader",
+      "cmds": [
+        "adb reboot fastboot"
+      ]
+    },
+    {
+      "title": "重新挂载",
+      "cmds": [
+        "adb remount"
+      ]
+    },
+    {
+      "title": "放开log限制",
+      "cmds": [
+        "adb shell setprop persist.sys.log.ctrl yes",
+        "adb shell setprop persist.sys.ratelimit 0",
+        "adb shell setprop log.ratelimit.level 0"
+      ]
+    }
+  ]
+}
