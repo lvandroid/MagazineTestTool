@@ -11,31 +11,39 @@ from flet import (
 )
 
 
-def load_json_file(file_path):
-    with open(file_path, "r", encoding="utf-8") as file:
-        return json.load(file)
-
-
-# 获取当前脚本所在的目录
-curr_dir = os.path.dirname(os.path.realpath(__file__))
-# 构建JSON文件的路径
-config_path = os.path.join(curr_dir, "..", "conf", "config.json")
-config = load_json_file(config_path)
 
 
 class CmdPanel(UserControl):
     def build(self):
+        self.cmd_panel = Column(expand=True)
         self.terminal = TextField(width=200)
         return Row([
             self.terminal,
-            Column([], expand=True)
+            self.cmd_panel
         ], expand=True)
 
+    def load_config(self):
+        def load_json_file(file_path):
+            with open(file_path, "r", encoding="utf-8") as file:
+                return json.load(file)
 
-# 根据配置文件加载对应的脚本命令
-def load_scripts(conf_path):
-    full_path = os.path.join(curr_dir, "..", "conf", conf_path)
-    scripts_config = load_json_file(full_path)
+        # 获取当前脚本所在的目录
+        curr_dir = os.path.dirname(os.path.realpath(__file__))
+        # 构建JSON文件的路径
+        config_path = os.path.join(curr_dir, "..", "conf", "config.json")
+        config = load_json_file(config_path)
+
+        # 根据配置文件加载对应的脚本命令
+        def load_scripts(conf_path):
+            full_path = os.path.join(curr_dir, "..", "conf", conf_path)
+            scripts_config = load_json_file(full_path)
+            self.cmd_panel.controls.clear()
+
+            for script in scripts_config["scripts"]:
+                self.cmd_panel.controls.append()
+
+
+
 
 
 def loading_settings(log_view, cmd_panel):
