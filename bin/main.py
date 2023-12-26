@@ -3,6 +3,7 @@ import flet
 from terminal import Terminal
 from testspace import TestSpace
 from settings import Settings
+from config import CmdPanel
 from flet import (
     Column,
     Row,
@@ -91,8 +92,12 @@ def appLayout():
         ],
         on_change=on_nav_change
     )
+    cmd_panel = CmdPanel()
+    cmd_panel.load_config()
+    # cmd_panel.update()
     return Row([
-        rail,
+        # rail,
+        # cmd_panel,
         VerticalDivider(width=1),
         body_content,
     ], expand=True)
