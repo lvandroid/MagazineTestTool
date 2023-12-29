@@ -1,0 +1,17 @@
+{
+  "tab_name": "shell",
+  "scripts": [
+    {
+      "title": "查看目录",
+      "cmds": [
+        "ls -l -a"
+      ]
+    },
+    {
+      "title": "查看ip",
+      "cmds": [
+        "ifconfig"
+      ]
+    }
+  ]
+}

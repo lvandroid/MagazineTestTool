@@ -7,6 +7,10 @@
     {
       "tab_name": "常用",
       "conf_path": "common.json"
+    },
+    {
+      "tab_name": "shell",
+      "conf_path": "shell.json"
     }
   ]
 }
