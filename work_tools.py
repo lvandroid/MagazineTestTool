@@ -1,13 +1,12 @@
 import os, json, logging
 
 import flet, subprocess, shlex
-from bin.settings import Settings
+from settings import Settings
 from flet import (
     NavigationRail,
     NavigationRailDestination,
     NavigationRailLabelType,
     ElevatedButton,
-    UserControl,
     Row,
     Column,
     TextField,
@@ -51,6 +50,11 @@ def clean_log(self):
 
 
 def main(page: Page):
+    build_page(page)
+
+
+def build_page(page: Page):
+    page.controls.clear()
     cmd_panel = Column(width=200, expand=False)
     terminal = TextField("", text_size=12, height=600, expand=True, multiline=True, read_only=True,
                          autofocus=True)
@@ -111,7 +115,8 @@ def main(page: Page):
         navigator.update()
         cmd_panel.update()
 
-    setting_page = Settings(visible=False)
+    setting_page = Settings(page, build_page)
+    setting_page.visible = False
 
     def update_view(cmd_panel_visible):
         if cmd_panel_visible:
