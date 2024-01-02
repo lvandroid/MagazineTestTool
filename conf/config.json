@@ -1,16 +1,20 @@
 {
-  "tabs": [
-    {
-      "tab_name": "外销",
-      "conf_path": "overseas.json"
-    },
-    {
-      "tab_name": "常用",
-      "conf_path": "common.json"
-    },
-    {
-      "tab_name": "shell",
-      "conf_path": "shell.json"
-    }
-  ]
+    "tabs": [
+        {
+            "tab_name": "外销",
+            "conf_path": "overseas.json"
+        },
+        {
+            "tab_name": "常用",
+            "conf_path": "common.json"
+        },
+        {
+            "tab_name": "shell",
+            "conf_path": "shell.json"
+        },
+        {
+            "tab_name": "git",
+            "conf_path": "1704210462.json"
+        }
+    ]
 }

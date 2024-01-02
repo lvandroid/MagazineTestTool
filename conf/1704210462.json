@@ -1,0 +1,13 @@
+{
+    "tab_name": "git",
+    "scripts": [
+        {
+            "title": "pull",
+            "cmds": [
+                "git pull",
+                "git log",
+                ""
+            ]
+        }
+    ]
+}

@@ -2,6 +2,7 @@ import json
 import logging
 import os
 import time
+import uuid
 
 from flet import (
     UserControl,
@@ -14,8 +15,15 @@ from flet import (
     Text,
     TextButton,
     AlertDialog,
-
+    ListView,
+    Tabs,
+    Tab,
+    Container,
+    colors,
+    icons,
+    Markdown,
 )
+from rich.box import Box
 
 # 获取当前脚本所在的目录
 curr_dir = os.path.dirname(os.path.realpath(__file__))
@@ -26,10 +34,14 @@ class Settings(UserControl):
         super().__init__()
         self.page = page
         self.on_create_tab = on_create_tab
+        self.cmd_rows = {}  # 使用字典来存储命令行及其ID
         self.page = page
         self.tab_name_input = TextField(label="Tab Name", hint_text="请输入tab的名称", autofocus=True, width=200)
-        self.command_rows = Column()  # 用于存放命令输入框的列
-        self.dialog_content = Column([self.tab_name_input, self.command_rows])
+        self.title_panel = Row([on_create_tab, self.add_cmd_btn()], expand=True)
+        self.tab_to_delete = TextField(label="Tab to Delete", hint_text="输入要删除的tab名称", width=200)
+        self.command_to_delete = TextField(label="Command to Delete", hint_text="输入要删除的命令标题", width=200)
+        self.cmd_list = ListView(expand=1, spacing=10, auto_scroll=True, width=800, )
+        self.dialog_content = Column([self.tab_name_input, self.add_cmd_btn(), self.cmd_list])
         self.add_command_row()  # 初始时添加一组命令输入框
 
         self.dialog = AlertDialog(
@@ -37,23 +49,71 @@ class Settings(UserControl):
             actions=[
                 ElevatedButton("确认", on_click=lambda e: self.create_tab()),
                 TextButton("取消", on_click=lambda e: self.update_dialog(False))
-            ]
+            ],
         )
         self.page.dialog = self.dialog
 
+    def add_cmd_btn(self):
+        return ElevatedButton("新增命令", on_click=lambda e: self.add_refresh_row())
+
+    def add_refresh_row(self):
+        self.add_command_row()
+        self.cmd_list.update()
+
+    def delete_cmd(self, row_id):
+        logging.debug(f"delete row_id:{row_id}")
+        if row_id in self.cmd_rows:
+            self.cmd_list.controls.remove(self.cmd_rows[row_id])
+            del self.cmd_rows[row_id]
+            logging.debug(f"delete row_id:{row_id}")
+            self.cmd_list.update()
+
     def add_command_row(self):
+        row_id = str(uuid.uuid4())  # 生成一个唯一的ID
         # 创建新的命令输入框
         title_input = TextField(label="Command Title", hint_text="请输入命令标题", width=200)
-        cmd_input = TextField(label="Commands", hint_text="输入命令，多个命令用逗号隔开", width=200)
-        self.command_rows.controls.append(Row([title_input, cmd_input, ElevatedButton("新增命令", on_click=lambda
-            e: self.add_command_row())]))
-        # self.command_rows.update()
+        cmd_input = TextField(label="Commands", hint_text="输入命令，多个命令用逗号隔开", width=400)
+        del_btn = TextButton("删除", on_click=lambda e: self.delete_cmd(row_id))
+        cmd_item = Row([title_input, cmd_input, del_btn], width=600)
+        self.cmd_rows[row_id] = cmd_item
+        self.cmd_list.controls.append(cmd_item)
+        logging.debug(f"add row_id:{row_id}")
 
     def build(self):
-        result = Row([
-            ElevatedButton("新增Tab", on_click=lambda e: self.add_tab_dialog())
-        ], expand=True, vertical_alignment=CrossAxisAlignment.START)
+        self.help_view = Markdown(width=600, height=800, visible=False)
+        self.container = Container(width=600, height=800)
+        self.content_pages = [Text("新增", visible=True), Text("删除 tab", visible=False), Text("修改 cmd", visible=False), self.help_view]
+        self.body_container = Row(self.content_pages, expand=1)
+        result = Column([
+            Tabs(selected_index=0, animation_duration=300,
+                 tabs=[
+                     Tab(text="新增Tab", icon=icons.ADD),
+                     Tab(text="删除Tab", icon=icons.DELETE),
+                     Tab(text="修改Cmd", icon=icons.EDIT),
+                     Tab(text="帮助", icon=icons.HELP),
+                 ], on_change=lambda e: self.tab_changed(e)),
+            self.body_container
+            # ElevatedButton("新增Tab", on_click=lambda e: self.add_tab_dialog())
+        ], expand=True)
         return result
+
+    def tab_changed(self, e):
+        select_index = e.control.selected_index
+        for index, item in enumerate(self.content_pages):
+            if select_index == index:
+                item.visible = True
+            else:
+                item.visible = False
+        if select_index == 3:
+            self.load_help()
+        self.body_container.update()
+
+    def load_help(self):
+        file_path = os.path.join("assets", "help.md")
+        with open(file_path, "r", encoding="utf-8") as file:
+            help_content = file.read()
+        self.help_view.value = help_content
+        self.help_view.update()
 
     def update_dialog(self, is_open):
         self.dialog.open = is_open
@@ -67,13 +127,15 @@ class Settings(UserControl):
         if not tab_name:
             return
         scripts = []
-        for row in self.command_rows.controls:
-            title_input, cmd_input = row.controls  # 假设每一行都有两个控件
-            if title_input.value and cmd_input.value:
-                scripts.append({
-                    "title": title_input.value,
-                    "cmds": [cmd.strip() for cmd in cmd_input.value.split(',')]
-                })
+        for row in self.cmd_rows.values():
+            if len(row.controls) >= 2:
+                title_input = row.controls[0]
+                cmd_input = row.controls[1]
+                if title_input.value and cmd_input.value:
+                    scripts.append({
+                        "title": title_input.value,
+                        "cmds": [cmd.strip() for cmd in cmd_input.value.split(',')]
+                    })
 
         new_content = {
             "tab_name": tab_name,
