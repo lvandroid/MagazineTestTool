@@ -4,6 +4,8 @@ import os
 import time
 import uuid
 
+from excel_filter import ExcelFilter
+
 from flet import (
     UserControl,
     Column,
@@ -35,7 +37,6 @@ class Settings(UserControl):
         self.page = page
         self.on_create_tab = on_create_tab
         self.cmd_rows = {}  # 使用字典来存储命令行及其ID
-        self.page = page
         self.tab_name_input = TextField(label="Tab Name", hint_text="请输入tab的名称", autofocus=True, width=200)
         self.title_panel = Row([on_create_tab, self.add_cmd_btn()], expand=True)
         self.tab_to_delete = TextField(label="Tab to Delete", hint_text="输入要删除的tab名称", width=200)
@@ -80,20 +81,21 @@ class Settings(UserControl):
         logging.debug(f"add row_id:{row_id}")
 
     def build(self):
+        self.excel_filter= ExcelFilter(False)
         self.help_view = Markdown(width=600, height=800, visible=False)
         self.container = Container(width=600, height=800)
-        self.content_pages = [Text("新增", visible=True), Text("删除 tab", visible=False), Text("修改 cmd", visible=False), self.help_view]
+        self.content_pages = [Text("Tab管理", visible=True),
+                              self.excel_filter,
+                              self.help_view]
         self.body_container = Row(self.content_pages, expand=1)
         result = Column([
-            Tabs(selected_index=0, animation_duration=300,
+            Tabs(selected_index=0, animation_duration=300, width=600,
                  tabs=[
-                     Tab(text="新增Tab", icon=icons.ADD),
-                     Tab(text="删除Tab", icon=icons.DELETE),
-                     Tab(text="修改Cmd", icon=icons.EDIT),
+                     Tab(text="Tab管理", icon=icons.SETTINGS_CELL),
+                     Tab(text="Excel工具", icon=icons.FILTER),
                      Tab(text="帮助", icon=icons.HELP),
                  ], on_change=lambda e: self.tab_changed(e)),
             self.body_container
-            # ElevatedButton("新增Tab", on_click=lambda e: self.add_tab_dialog())
         ], expand=True)
         return result
 
@@ -104,7 +106,7 @@ class Settings(UserControl):
                 item.visible = True
             else:
                 item.visible = False
-        if select_index == 3:
+        if select_index == 2:
             self.load_help()
         self.body_container.update()
 

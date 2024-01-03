@@ -2,6 +2,7 @@ import os, json, logging
 
 import flet, subprocess, shlex
 from settings import Settings
+from excel_filter import ExcelFilter
 from flet import (
     NavigationRail,
     NavigationRailDestination,
@@ -95,6 +96,7 @@ def build_page(page: Page):
         conf_path.append(tab["conf_path"])
         destinations.append(NavigationRailDestination(label=tab_name, icon=icons.LABEL))
         logging.debug(f"tab:{tab}")
+    destinations.append(NavigationRailDestination(label="Excel", icon=icons.DATA_ARRAY))
     destinations.append(NavigationRailDestination(label="设置", icon=icons.SETTINGS))
 
     navigator = NavigationRail(visible=True,
@@ -108,9 +110,11 @@ def build_page(page: Page):
 
     def on_nav_change(e):
         panel_visible = e.control.selected_index != len(conf_path)
-        if panel_visible:
-            load_scripts(conf_path[e.control.selected_index])
-        update_view(panel_visible)
+        selected_index = e.control.selected_index
+        logging.debug(f"on_nav_change: {selected_index}")
+        if panel_visible and selected_index < len(conf_path):
+            load_scripts(conf_path[selected_index])
+        update_view(panel_visible, selected_index)
         navigator.destinations = destinations
         navigator.update()
         cmd_panel.update()
@@ -118,15 +122,31 @@ def build_page(page: Page):
     setting_page = Settings(page, build_page)
     setting_page.visible = False
 
-    def update_view(cmd_panel_visible):
+    excel_filter = ExcelFilter(visible=False)
+
+    tab_page_data = {len(conf_path)-1: excel_filter, len(conf_path): setting_page}
+
+    def update_other_view(selected_index, visible):
+        if not visible:
+            for index, view in tab_page_data.items():
+                view.visible = False
+        else:
+            for index, view in tab_page_data.items():
+                if index == selected_index:
+                    view.visible = visible
+                else:
+                    view.visible = not visible
+
+    def update_view(cmd_panel_visible, selected_index):
+        logging.debug(f"update_view: {cmd_panel_visible}, {selected_index}")
         if cmd_panel_visible:
             cmd_panel.visible = True
             terminal.visible = True
-            setting_page.visible = False
+            update_other_view(selected_index, False)
         else:
             cmd_panel.visible = False
             terminal.visible = False
-            setting_page.visible = True
+            update_other_view(selected_index, True)
         page.update()
 
     navigator.on_change = on_nav_change
