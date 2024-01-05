@@ -1,6 +1,8 @@
+import flet
 from flet import (app, Page, FilePicker, Column, ElevatedButton, GridView, Row, Checkbox, Text, FilePickerResultEvent,
                   icons, TextField, UserControl, Container, ListView)
 
+import utils
 import pandas as pd
 import logging
 
@@ -87,16 +89,18 @@ class ExcelFilter(UserControl):
     def build(self):
         self.filter_datas = [Text("1"), Text("2"), Text("3"), Text("4"), Text("5"), Text("6")]
         self.filter_list = ListView(controls=self.filter_datas, width=300)
+
         return Column([
             Row([
                 ElevatedButton(
                     "请选择excel文件",
+                    on_click=lambda _: utils.show_toast(self.page, "选择一个excel")
                 ),
                 # on_click=lambda _: pick_files_dialog.pick_files(
                 #     allow_multiple=True, allowed_extensions=["xls", "xlsx"]
                 # )),
                 ElevatedButton("生成过滤后的数据",
-                               # on_click=lambda _: filter_data(operations_area, details_area)
+                               on_click=lambda _: utils.show_toast(self.page, "生成过滤后的数据")
                                )
             ], expand=False),
 
