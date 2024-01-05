@@ -16,5 +16,10 @@
             "tab_name": "git",
             "conf_path": "1704210462.json"
         }
-    ]
+    ],
+    "excel_filter": {
+        "sheet_name": "BUG详情表",
+        "col_name": "所属小组",
+        "filter_value": "商业化应用一组"
+    }
 }

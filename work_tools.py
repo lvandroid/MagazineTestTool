@@ -109,7 +109,7 @@ def build_page(page: Page):
                                )
 
     def on_nav_change(e):
-        panel_visible = e.control.selected_index != len(conf_path)
+        panel_visible = e.control.selected_index < len(conf_path)
         selected_index = e.control.selected_index
         logging.debug(f"on_nav_change: {selected_index}")
         if panel_visible and selected_index < len(conf_path):
@@ -124,18 +124,17 @@ def build_page(page: Page):
 
     excel_filter = ExcelFilter(visible=False)
 
-    tab_page_data = {len(conf_path)-1: excel_filter, len(conf_path): setting_page}
+    tab_page_data = {len(conf_path): excel_filter, len(conf_path)+1: setting_page}
 
     def update_other_view(selected_index, visible):
-        if not visible:
-            for index, view in tab_page_data.items():
+        for key, view in tab_page_data.items():
+            if not visible:
                 view.visible = False
-        else:
-            for index, view in tab_page_data.items():
-                if index == selected_index:
-                    view.visible = visible
+            else:
+                if key == selected_index:
+                    view.visible = True
                 else:
-                    view.visible = not visible
+                    view.visible = False
 
     def update_view(cmd_panel_visible, selected_index):
         logging.debug(f"update_view: {cmd_panel_visible}, {selected_index}")
@@ -157,7 +156,8 @@ def build_page(page: Page):
         cmd_panel,
         VerticalDivider(width=1),
         terminal,
-        setting_page
+        excel_filter,
+        setting_page,
     ], expand=True))
     cmd_panel.update()
     page.update()
