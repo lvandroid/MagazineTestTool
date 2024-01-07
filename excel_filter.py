@@ -69,74 +69,79 @@ def filter_by_column_title_contains(dataframe, column_title_substring, filter_va
 # 过滤数据
 def filter_data(operations_area: Column, details_area: TextField):
     data = filter_by_column_title_contains(df, column_title_substring, filter_value)
-    # details_area.controls.clear()
     details_area.clean()
-    select_columns = ["处理人", "所属项目", "[编号]标题", "当前状态", "优先级"]
+    select_columns = ["处理人", "[编号]标题",]
     if data is not None:
         final_result = data.loc[:, select_columns]
         for index, row in final_result.iterrows():
-            # details_area.controls.append(Text(row.values))
-            details_area.value = details_area.value + row.values
-            logging.debug(row.values)
+            row_str = ", ".join(map(str, row.values))
+            details_area.value += row_str + "\n"
         details_area.update()
 
+def filter_data_simple(operations_area: Column, details_area: TextField):
+    data = filter_by_column_title_contains(df, column_title_substring, filter_value)
+    details_area.value = ""  # 清除之前的内容
+    result_dict = {}  # 创建一个字典来保存处理人和编号的对应关系
+
+    select_columns = ["处理人", "所属项目", "[编号]标题", "优先级"]
+    if data is not None:
+        final_result = data.loc[:, select_columns]
+        for index, row in final_result.iterrows():
+            # 获取处理人和编号
+            person = row["处理人"]
+            project_code = row["[编号]标题"].split(" ")[0]  # 假设编号在标题的开头
+
+            # 添加到字典中
+            if person in result_dict:
+                result_dict[person].add(project_code)  # 使用集合来避免重复
+            else:
+                result_dict[person] = {project_code}
+
+        # 格式化输出
+        for person, codes in result_dict.items():
+            codes_str = " ".join(codes)
+            details_area.value += f"@{person} {codes_str}\n"  # 名字后换行
+
+        details_area.update()
 
 class ExcelFilter(UserControl):
-    def __init__(self, visible):
+    def __init__(self, visible, page):
         super().__init__()
         self.visible = visible
+        self.page = page
 
     def build(self):
         self.filter_datas = [Text("1"), Text("2"), Text("3"), Text("4"), Text("5"), Text("6")]
         self.filter_list = ListView(controls=self.filter_datas, width=300)
 
-        return Column([
-            Row([
-                ElevatedButton(
-                    "请选择excel文件",
-                    on_click=lambda _: utils.show_toast(self.page, "选择一个excel")
-                ),
-                # on_click=lambda _: pick_files_dialog.pick_files(
-                #     allow_multiple=True, allowed_extensions=["xls", "xlsx"]
-                # )),
-                ElevatedButton("生成过滤后的数据",
-                               on_click=lambda _: utils.show_toast(self.page, "生成过滤后的数据")
-                               )
-            ], expand=False),
+        def pick_files_result(e: FilePickerResultEvent):
+            # selected_files.value = (
+            #     ", ".join(map(lambda f: f.name, e.files)) if e.files else "Cancelled!"
+            # )
+            # selected_files.update()
+            if e.files:
+                load_excel(e.files[0].path, operations_area)
 
-            self.filter_list,
-        ],
-            expand=False)
+        pick_files_dialog = FilePicker(on_result=pick_files_result)
+        # selected_files = Text()
+        operations_area = Column(width=200, height=800, scroll=True)
+        # details_area = Column(width=800)
+        details_area = TextField(text_size=12, height=600, width=500, multiline=True, read_only=True,
+                                 autofocus=True)
 
+        self.page.overlay.append(pick_files_dialog)
 
-def main(page: Page):
-    def pick_files_result(e: FilePickerResultEvent):
-        # selected_files.value = (
-        #     ", ".join(map(lambda f: f.name, e.files)) if e.files else "Cancelled!"
-        # )
-        # selected_files.update()
-        if e.files:
-            load_excel(e.files[0].path, operations_area)
-
-    pick_files_dialog = FilePicker(on_result=pick_files_result)
-    # selected_files = Text()
-    operations_area = Column(width=200, height=800, scroll=True)
-    # details_area = Column(width=800)
-    details_area = TextField()
-
-    page.overlay.append(pick_files_dialog)
-
-    page.add(
-        Row(
+        return Row(
             [
                 Column([
                     ElevatedButton(
-                        "Pick files",
+                        "请选择excel文件",
                         icon=icons.UPLOAD_FILE,
                         on_click=lambda _: pick_files_dialog.pick_files(
                             allow_multiple=True, allowed_extensions=["xls", "xlsx"]
                         )),
-                    ElevatedButton("生成过滤后的数据", on_click=lambda _: filter_data(operations_area, details_area))
+                    ElevatedButton("生成过滤后的数据",
+                                   on_click=lambda _: filter_data_simple(operations_area, details_area))
                 ],
                 ),
                 # selected_files,
@@ -144,6 +149,3 @@ def main(page: Page):
                 details_area
             ]
         )
-    )
-
-# app(target=main)

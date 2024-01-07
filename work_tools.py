@@ -122,7 +122,7 @@ def build_page(page: Page):
     setting_page = Settings(page, build_page)
     setting_page.visible = False
 
-    excel_filter = ExcelFilter(visible=False)
+    excel_filter = ExcelFilter(visible=False, page=page)
 
     tab_page_data = {len(conf_path): excel_filter, len(conf_path)+1: setting_page}
 

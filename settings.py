@@ -82,7 +82,7 @@ class Settings(UserControl):
         logging.debug(f"add row_id:{row_id}")
 
     def build(self):
-        self.excel_filter= ExcelFilter(False)
+        self.excel_filter= ExcelFilter(visible=False, page=self.page)
         self.help_view = Markdown(width=600, height=800, visible=False)
         self.container = Container(width=600, height=800)
         self.content_pages = [
