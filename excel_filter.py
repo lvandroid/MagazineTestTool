@@ -5,6 +5,7 @@ from flet import (app, Page, FilePicker, Column, ElevatedButton, GridView, Row, 
 import utils
 import pandas as pd
 import logging
+import re
 
 # 设置日志格式和级别
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -70,13 +71,14 @@ def filter_by_column_title_contains(dataframe, column_title_substring, filter_va
 def filter_data(operations_area: Column, details_area: TextField):
     data = filter_by_column_title_contains(df, column_title_substring, filter_value)
     details_area.clean()
-    select_columns = ["处理人", "[编号]标题",]
+    select_columns = ["处理人", "[编号]标题", ]
     if data is not None:
         final_result = data.loc[:, select_columns]
         for index, row in final_result.iterrows():
             row_str = ", ".join(map(str, row.values))
             details_area.value += row_str + "\n"
         details_area.update()
+
 
 def filter_data_simple(operations_area: Column, details_area: TextField):
     data = filter_by_column_title_contains(df, column_title_substring, filter_value)
@@ -87,15 +89,17 @@ def filter_data_simple(operations_area: Column, details_area: TextField):
     if data is not None:
         final_result = data.loc[:, select_columns]
         for index, row in final_result.iterrows():
-            # 获取处理人和编号
+            # 获取处理人
             person = row["处理人"]
-            project_code = row["[编号]标题"].split(" ")[0]  # 假设编号在标题的开头
+            # 使用正则表达式提取方括号内的内容
+            project_code = re.findall(r'\[([^\]]*)\]', row["[编号]标题"])
+            project_code = project_code[0] if project_code else ""  # 获取第一个匹配项
 
             # 添加到字典中
             if person in result_dict:
-                result_dict[person].add(project_code)  # 使用集合来避免重复
+                result_dict[person].add(f"[{project_code}]")  # 使用集合来避免重复
             else:
-                result_dict[person] = {project_code}
+                result_dict[person] = {f"[{project_code}]"}
 
         # 格式化输出
         for person, codes in result_dict.items():
@@ -103,6 +107,7 @@ def filter_data_simple(operations_area: Column, details_area: TextField):
             details_area.value += f"@{person} {codes_str}\n"  # 名字后换行
 
         details_area.update()
+
 
 class ExcelFilter(UserControl):
     def __init__(self, visible, page):
@@ -136,7 +141,6 @@ class ExcelFilter(UserControl):
                 Column([
                     ElevatedButton(
                         "请选择excel文件",
-                        icon=icons.UPLOAD_FILE,
                         on_click=lambda _: pick_files_dialog.pick_files(
                             allow_multiple=True, allowed_extensions=["xls", "xlsx"]
                         )),

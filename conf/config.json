@@ -7,15 +7,8 @@
         {
             "tab_name": "常用",
             "conf_path": "common.json"
-        },
-        {
-            "tab_name": "shell",
-            "conf_path": "shell.json"
-        },
-        {
-            "tab_name": "GIT",
-            "conf_path": "1704640609.json"
         }
+
     ],
     "excel_filter": {
         "sheet_name": "BUG详情表",
