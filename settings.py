@@ -83,12 +83,15 @@ class Settings(UserControl):
 
     def build(self):
         self.excel_filter= ExcelFilter(visible=False, page=self.page)
-        self.help_view = Markdown(width=600, height=800, visible=False)
+        self.help_view = Text("测试版本", width=600, height=800, visible=False)
         self.container = Container(width=600, height=800)
+        self.about_me = Text("使用问题请联系zhaolu", visible=False)
         self.content_pages = [
             TabSetting(page=self.page, on_create_tab=self.on_create_tab),
                               self.excel_filter,
-                              self.help_view]
+                              self.help_view,
+                              self.about_me
+        ]
         self.body_container = Row(self.content_pages, expand=1)
         result = Column([
             Tabs(selected_index=0, animation_duration=300, width=600,
@@ -96,6 +99,7 @@ class Settings(UserControl):
                      Tab(text="Tab管理", icon=icons.SETTINGS_CELL),
                      Tab(text="Excel工具", icon=icons.FILTER),
                      Tab(text="帮助", icon=icons.HELP),
+                     Tab(text="关于", icon=icons.INFO)
                  ], on_change=lambda e: self.tab_changed(e)),
             self.body_container
         ], expand=True)
