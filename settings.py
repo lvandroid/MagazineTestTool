@@ -122,6 +122,7 @@ class Settings(UserControl):
     def update_dialog(self, is_open):
         self.dialog.open = is_open
         self.dialog.update()
+        self.page.update()
 
     def add_tab_dialog(self):
         self.update_dialog(True)

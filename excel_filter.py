@@ -1,11 +1,9 @@
-import flet
-from flet import (app, Page, FilePicker, Column, ElevatedButton, GridView, Row, Checkbox, Text, FilePickerResultEvent,
-                  icons, TextField, UserControl, Container, ListView)
-
-import utils
-import pandas as pd
 import logging
 import re
+
+import pandas as pd
+from flet import (FilePicker, Column, ElevatedButton, Row, Text, FilePickerResultEvent,
+                  TextField, UserControl, ListView, VerticalDivider, Switch)
 
 # 设置日志格式和级别
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -19,10 +17,10 @@ def load_excel(file_path, operations_area: Column):
     global df
     df = pd.read_excel(file_path, sheet_name="BUG详情表")
     operations_area.controls.clear()
-    for col in df.columns:
-        chk = Checkbox(label=col, value=False)
-        operations_area.controls.append(chk)
-    operations_area.update()
+    # for col in df.columns:
+    #     chk = Checkbox(label=col, value=False)
+    #     operations_area.controls.append(chk)
+    # operations_area.update()
 
 
 def filter_dataframe():
@@ -126,10 +124,12 @@ class ExcelFilter(UserControl):
             # selected_files.update()
             if e.files:
                 load_excel(e.files[0].path, operations_area)
+                filter_data_simple(operations_area, details_area)
 
         pick_files_dialog = FilePicker(on_result=pick_files_result)
         # selected_files = Text()
-        operations_area = Column(width=200, height=800, scroll=True)
+        # operations_area = Column(width=200, height=800, scroll=True)
+        operations_area = Column()
         # details_area = Column(width=800)
         details_area = TextField(text_size=12, height=600, width=500, multiline=True, read_only=True,
                                  autofocus=True)
@@ -139,17 +139,21 @@ class ExcelFilter(UserControl):
         return Row(
             [
                 Column([
-                    ElevatedButton(
-                        "请选择excel文件",
+                    Row([
+                       ElevatedButton(
+                        "组代表bug统计",
                         on_click=lambda _: pick_files_dialog.pick_files(
                             allow_multiple=True, allowed_extensions=["xls", "xlsx"]
                         )),
-                    ElevatedButton("生成过滤后的数据",
-                                   on_click=lambda _: filter_data_simple(operations_area, details_area))
+                        Switch(label="显示bug详情")
+                    ]),
+                    # ElevatedButton("生成过滤后的数据",
+                    #                on_click=lambda _: filter_data_simple(operations_area, details_area))
                 ],
                 ),
                 # selected_files,
-                operations_area,
+                # operations_area,
+                VerticalDivider(width=1),
                 details_area
             ]
         )

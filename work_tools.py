@@ -1,6 +1,6 @@
 import os, json, logging
 
-import flet, subprocess, shlex
+import flet, subprocess, shlex, sys
 from settings import Settings
 from excel_filter import ExcelFilter
 from flet import (
@@ -17,7 +17,12 @@ from flet import (
 )
 
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
-
+if getattr(sys, 'frozen', False):
+    # 如果程序被打包，则使用可执行文件所在的目录
+    application_path = os.path.dirname(sys.executable)
+else:
+    # 如果程序未被打包，则使用__file__所在的目录
+    application_path = os.path.dirname(os.path.realpath(__file__))
 
 def exec_cmd(cmd, log_view: TextField):
     result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
@@ -63,11 +68,15 @@ def build_page(page: Page):
     def load_json_file(file_path):
         with open(file_path, "r", encoding="utf-8") as file:
             return json.load(file)
+    def get_config_path():
 
-    # 获取当前脚本所在的目录
-    curr_dir = os.path.dirname(os.path.realpath(__file__))
+
+        # 构建配置文件的路径
+        config_path = os.path.join(application_path, "conf", "config.json")
+        return config_path
+
     # 构建JSON文件的路径
-    config_path = os.path.join(curr_dir, "conf", "config.json")
+    config_path = get_config_path()
     config = load_json_file(config_path)
     logging.debug(config)
 
@@ -79,7 +88,7 @@ def build_page(page: Page):
 
     # 根据配置文件加载对应的脚本命令
     def load_scripts(conf_path):
-        full_path = os.path.join(curr_dir, "conf", conf_path)
+        full_path = os.path.join(application_path, "conf", conf_path)
         scripts_config = load_json_file(full_path)
         cmd_panel.controls.clear()
         for script in scripts_config["scripts"]:
