@@ -102,7 +102,7 @@ def filter_data_simple(operations_area: Column, details_area: TextField):
         # 格式化输出
         for person, codes in result_dict.items():
             codes_str = " ".join(codes)
-            details_area.value += f"@{person} {codes_str}\n"  # 名字后换行
+            details_area.value += f"{person} {codes_str}\n"  # 名字后换行
 
         details_area.update()
 
@@ -145,7 +145,7 @@ class ExcelFilter(UserControl):
                         on_click=lambda _: pick_files_dialog.pick_files(
                             allow_multiple=True, allowed_extensions=["xls", "xlsx"]
                         )),
-                        Switch(label="显示bug详情")
+                        # Switch(label="显示bug详情")
                     ]),
                     # ElevatedButton("生成过滤后的数据",
                     #                on_click=lambda _: filter_data_simple(operations_area, details_area))

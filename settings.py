@@ -82,13 +82,13 @@ class Settings(UserControl):
         logging.debug(f"add row_id:{row_id}")
 
     def build(self):
-        self.excel_filter= ExcelFilter(visible=False, page=self.page)
+        # self.excel_filter= ExcelFilter(visible=False, page=self.page)
         self.help_view = Text("测试版本", width=600, height=800, visible=False)
         self.container = Container(width=600, height=800)
-        self.about_me = Text("使用问题请联系zhaolu", visible=False)
+        self.about_me = Text("使用问题请联系zhaolu", visible=False, width=600, height=800,)
         self.content_pages = [
             TabSetting(page=self.page, on_create_tab=self.on_create_tab),
-                              self.excel_filter,
+                              # self.excel_filter,
                               self.help_view,
                               self.about_me
         ]
@@ -97,7 +97,7 @@ class Settings(UserControl):
             Tabs(selected_index=0, animation_duration=300, width=600,
                  tabs=[
                      Tab(text="Tab管理", icon=icons.SETTINGS_CELL),
-                     Tab(text="Excel工具", icon=icons.FILTER),
+                     # Tab(text="Excel工具", icon=icons.FILTER),
                      Tab(text="帮助", icon=icons.HELP),
                      Tab(text="关于", icon=icons.INFO)
                  ], on_change=lambda e: self.tab_changed(e)),

@@ -78,7 +78,6 @@ def build_page(page: Page):
     # 构建JSON文件的路径
     config_path = get_config_path()
     config = load_json_file(config_path)
-    logging.debug(config)
 
     def create_button_with_cmd(title, cmd_array):
         def on_click(e):
